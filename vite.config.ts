@@ -7,7 +7,7 @@ function telegramApiDev(): Plugin {
   return {
     name: 'telegram-api-dev',
     configureServer(server) {
-      const handler = createNotifyHandler('development')
+      const handler = createNotifyHandler()
       server.middlewares.use('/api/notify', (req, res) => {
         void handler(req, res)
       })

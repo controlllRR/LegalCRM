@@ -1,6 +1,9 @@
 import type { IncomingMessage, ServerResponse } from 'node:http'
-import { loadEnv } from 'vite'
 import { sendToTelegram } from './telegram.js'
+import {
+  TELEGRAM_BOT_TOKEN,
+  TELEGRAM_CHAT_ID,
+} from './telegram-config.js'
 
 async function readBody(req: IncomingMessage): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -13,9 +16,7 @@ async function readBody(req: IncomingMessage): Promise<string> {
   })
 }
 
-export function createNotifyHandler(mode: string) {
-  const env = loadEnv(mode, process.cwd(), '')
-
+export function createNotifyHandler() {
   return async (req: IncomingMessage, res: ServerResponse) => {
     if (req.method !== 'POST') {
       res.statusCode = 405
@@ -35,8 +36,8 @@ export function createNotifyHandler(mode: string) {
 
       const result = await sendToTelegram(
         text,
-        env.TELEGRAM_BOT_TOKEN,
-        env.TELEGRAM_CHAT_ID
+        process.env.TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN,
+        process.env.TELEGRAM_CHAT_ID || TELEGRAM_CHAT_ID
       )
 
       if (!result.ok) {
