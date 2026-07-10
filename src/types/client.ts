@@ -6,6 +6,8 @@ export interface Client {
   phone: string
   status: ClientStatus
   createdAt: string
+  deadline?: string
+  notes?: string
 }
 
 export interface StatusCounts {
@@ -14,3 +16,5 @@ export interface StatusCounts {
   closed: number
   total: number
 }
+
+export type ViewMode = 'table' | 'kanban'

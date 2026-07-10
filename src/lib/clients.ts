@@ -1,11 +1,17 @@
 import type { Client, ClientStatus, StatusCounts } from '../types/client'
 import { DEMO_CLIENTS, STORAGE_KEY } from '../constants/statuses'
+import { defaultDeadline } from './deadline'
 
 function createClient(
-  data: Pick<Client, 'name' | 'phone' | 'status'>
+  data: Pick<Client, 'name' | 'phone' | 'status'> & {
+    deadline?: string
+    notes?: string
+  }
 ): Client {
   return {
     id: crypto.randomUUID(),
+    deadline: data.deadline,
+    notes: data.notes,
     ...data,
     createdAt: new Date().toISOString(),
   }
@@ -22,7 +28,7 @@ function loadClients(): Client[] {
     /* ignore corrupt data */
   }
 
-  const demo = DEMO_CLIENTS.map(createClient)
+  const demo = DEMO_CLIENTS.map((d) => createClient(d))
   localStorage.setItem(STORAGE_KEY, JSON.stringify(demo))
   return demo
 }
@@ -36,20 +42,43 @@ export function getClients(): Client[] {
 }
 
 export function addClient(
-  data: Pick<Client, 'name' | 'phone' | 'status'>
+  data: Pick<Client, 'name' | 'phone' | 'status'> & {
+    deadline?: string
+    notes?: string
+  }
 ): Client {
-  const client = createClient(data)
+  const client = createClient({
+    ...data,
+    deadline: data.deadline || defaultDeadline(),
+  })
   const clients = [...loadClients(), client]
   saveClients(clients)
   return client
 }
 
-export function updateClientStatus(id: string, status: ClientStatus): Client | null {
+export function updateClientStatus(
+  id: string,
+  status: ClientStatus
+): Client | null {
   const clients = loadClients()
   const index = clients.findIndex((c) => c.id === id)
   if (index === -1) return null
 
   const updated = { ...clients[index], status }
+  clients[index] = updated
+  saveClients(clients)
+  return updated
+}
+
+export function updateClient(
+  id: string,
+  patch: Partial<Pick<Client, 'notes' | 'deadline' | 'status'>>
+): Client | null {
+  const clients = loadClients()
+  const index = clients.findIndex((c) => c.id === id)
+  if (index === -1) return null
+
+  const updated = { ...clients[index], ...patch }
   clients[index] = updated
   saveClients(clients)
   return updated
