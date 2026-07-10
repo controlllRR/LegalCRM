@@ -31,17 +31,17 @@ export function useClients() {
 
   const showNotification = (message: string) => {
     setNotification(message)
-    setTimeout(() => setNotification(null), 4000)
+    setTimeout(() => setNotification(null), 5000)
   }
 
   const addClient = async (data: Pick<Client, 'name' | 'phone' | 'status'>) => {
     const client = addClientToStorage(data)
     refresh()
-    const sent = await notifyNewClient(client)
+    const result = await notifyNewClient(client)
     showNotification(
-      sent
+      result.ok
         ? `Клиент «${client.name}» добавлен. Уведомление отправлено в Telegram.`
-        : `Клиент «${client.name}» успешно добавлен.`
+        : `Клиент «${client.name}» добавлен. Telegram: ${result.error}`
     )
     return client
   }
@@ -52,11 +52,11 @@ export function useClients() {
     if (!updated || !prev) return null
 
     refresh()
-    const sent = await notifyStatusChange(updated, prev.status)
+    const result = await notifyStatusChange(updated, prev.status)
     showNotification(
-      sent
+      result.ok
         ? `Статус «${updated.name}» изменён. Уведомление отправлено.`
-        : `Статус «${updated.name}» обновлён.`
+        : `Статус обновлён. Telegram: ${result.error}`
     )
     return updated
   }
