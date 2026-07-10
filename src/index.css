@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --color-navy-950: #0a1628;
+  --color-navy-900: #0f2744;
+  --color-navy-800: #1a3a5c;
+  --color-navy-700: #234b73;
+  --color-gold-400: #d4a853;
+  --color-gold-500: #c49a3c;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 12px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
